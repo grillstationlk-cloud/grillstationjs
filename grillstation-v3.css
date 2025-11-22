@@ -37,3 +37,10 @@
   color: #000;
 }
 
+@media (max-width: 600px) {
+  #floating-cart {
+    width:auto;
+    left:10px;
+    right: 10px;
+  }
+}
