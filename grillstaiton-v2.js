@@ -59,6 +59,22 @@ let SHOP_WHATSAPP = "";
       generateProducts();
       generateCategories();
       updateCart();
+      setTimeout(() => {
+        const shared = new URLSearchParams(window.location.search).get('product');
+        if (shared) {
+          const target = d.getElementById('product-' + shared.replace(/\s+/g, '-').toLowerCase());
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            target.style.boxShadow = '0 0 20px #FF6B00';
+            target.style.transform = 'scale(1.02)';
+            target.style.transition = 'all 0.5s ease';
+            setTimeout(() => {
+              target.style.boxShadow = '';
+              target.style.transform = '';
+            }, 4000);
+          }
+        }
+      }, 500);
     }).catch(e=>console.error('Products fetch failed', e));
 
   // ---------------- Fetch areas ----------------
@@ -102,6 +118,7 @@ let SHOP_WHATSAPP = "";
     products.forEach(p=>{
       const parent = p.section==='menu'?menuSection:offersMenu;
       const div=d.createElement('div'); div.className='item';
+      div.id = 'product-' + p.name.replace(/\s+/g, '-').toLowerCase();
       if(p.section==='menu' && p.category) div.dataset.category=p.category;
 
       div.innerHTML = `
@@ -112,10 +129,21 @@ let SHOP_WHATSAPP = "";
         <select class="size"></select>
         <select class="qty"><option>1</option><option>2</option><option>3</option><option>4</option></select><br>
         ${p.name.toLowerCase().includes("pizza")?'<label><input type="checkbox" class="extra-cheese"> Extra Cheese + LKR 400</label><br>':''}
-        <button class="add-cart">Add to Cart</button>
+        <div style="display:flex; gap:10px; justify-content:center; padding: 0 20px;">
+          <button class="add-cart" style="margin: 15px 0 0; width: 80%;">Add to Cart</button>
+          <button class="share-btn" style="margin: 15px 0 0; background: #333; border: none; color: white; padding: 10px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; font-size: 1.2rem;" title="Share this item">🔗</button>
+        </div>
         <span class="out-of-stock">Out of Stock</span>
       `;
       parent.appendChild(div);
+
+      div.querySelector('.share-btn').addEventListener('click', () => {
+        const url = new URL(window.location.href);
+        url.searchParams.set('product', p.name);
+        navigator.clipboard.writeText(url.toString()).then(() => {
+          showToast("Link copied! 🔗");
+        });
+      });
 
       const sizeSel=div.querySelector('.size'), qtySel=div.querySelector('.qty'),
             extra=div.querySelector('.extra-cheese'), live=div.querySelector('.live-price'),
