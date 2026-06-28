@@ -122,7 +122,10 @@ let SHOP_WHATSAPP = "";
       if(p.section==='menu' && p.category) div.dataset.category=p.category;
 
       div.innerHTML = `
-        <img src="${p.image}" alt="${p.name}">
+        <div style="position:relative; width:100%; height:220px; background:#111; overflow:hidden;">
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#555; z-index:1; font-size: 0.9rem;">Loading...</div>
+          <img src="${p.image}" alt="${p.name}" loading="lazy" style="position:relative; z-index:2; opacity:0; transition:opacity 0.4s ease, transform 0.5s ease; width:100%; height:100%; object-fit:cover;" onload="this.style.opacity=1; this.previousElementSibling.style.display='none';">
+        </div>
         <h2>${p.name}</h2>
         <h3>Price: <span class="live-price"></span></h3>
         ${p.desc?`<p>${p.desc}</p>`:''}
