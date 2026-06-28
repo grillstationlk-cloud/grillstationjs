@@ -168,7 +168,7 @@ let SHOP_WHATSAPP = "";
 
                 // Add Watermark
                 try {
-                  let logoResponse = await fetch('./logo.png');
+                  let logoResponse = await fetch('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhpnuS5ozO5AvovjrHZtI-lyZRGs_Ekzqx8q31hDXdSeTYkXoSILFas9XNuZ0soPVQwuiaTjRE646_zM8UPGTLi8w7jcr9vzH4CaFHrSm56QgiuytAEoOBJP1dAiqBt_wBNcAjHSLlxDRrd_aGvziEVrCQ0k7bZPLE1TGfJllVcmuP5bE-jmhlMZT3XENuG/s1600/tallest%20actress%20in%20Kollywood.jpg');
                   if (!logoResponse.ok) {
                     const headerLogo = document.querySelector('header img');
                     if (headerLogo) logoResponse = await fetch(headerLogo.src);
