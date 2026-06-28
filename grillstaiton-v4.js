@@ -137,12 +137,45 @@ let SHOP_WHATSAPP = "";
       `;
       parent.appendChild(div);
 
-      div.querySelector('.share-btn').addEventListener('click', () => {
+      div.querySelector('.share-btn').addEventListener('click', async () => {
         const url = new URL(window.location.href);
         url.searchParams.set('product', p.name);
-        navigator.clipboard.writeText(url.toString()).then(() => {
+        const shareUrl = url.toString();
+        
+        try {
+          if (navigator.share) {
+            let fileArray = [];
+            if (p.image) {
+              try {
+                // Attempt to fetch the image to attach as a file
+                const response = await fetch(p.image);
+                const blob = await response.blob();
+                const file = new File([blob], p.name.replace(/\s+/g, '_') + '.jpg', { type: blob.type || 'image/jpeg' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                  fileArray = [file];
+                }
+              } catch (imgErr) {
+                console.log("Could not fetch image for native share (CORS):", imgErr);
+              }
+            }
+            
+            const shareData = {
+              title: 'Grill Station - ' + p.name,
+              text: 'Check out ' + p.name + ' at Grill Station! 🍔',
+              url: shareUrl
+            };
+            if (fileArray.length > 0) shareData.files = fileArray;
+            
+            await navigator.share(shareData);
+          } else {
+            await navigator.clipboard.writeText(shareUrl);
+            showToast("Link copied! 🔗");
+          }
+        } catch (err) {
+          console.log("Share aborted or failed, copying link instead.");
+          await navigator.clipboard.writeText(shareUrl);
           showToast("Link copied! 🔗");
-        });
+        }
       });
 
       const sizeSel=div.querySelector('.size'), qtySel=div.querySelector('.qty'),
