@@ -140,7 +140,13 @@ let SHOP_WHATSAPP = "";
       `;
       parent.appendChild(div);
 
-      div.querySelector('.share-btn').addEventListener('click', async () => {
+      div.querySelector('.share-btn').addEventListener('click', async (e) => {
+        const btn = e.currentTarget;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳';
+        btn.style.opacity = '0.7';
+        btn.disabled = true;
+
         const url = new URL(window.location.href);
         url.searchParams.set('product', p.name);
         const shareUrl = url.toString();
@@ -153,54 +159,7 @@ let SHOP_WHATSAPP = "";
                 // Attempt to fetch the image to attach as a file
                 const response = await fetch(p.image);
                 const blob = await response.blob();
-                
-                const img = new Image();
-                const imgUrl = URL.createObjectURL(blob);
-                img.src = imgUrl;
-                await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
-
-                // Create canvas to composite image
-                const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0);
-
-                // Add Watermark
-                try {
-                  const watermarkUrl = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhpnuS5ozO5AvovjrHZtI-lyZRGs_Ekzqx8q31hDXdSeTYkXoSILFas9XNuZ0soPVQwuiaTjRE646_zM8UPGTLi8w7jcr9vzH4CaFHrSm56QgiuytAEoOBJP1dAiqBt_wBNcAjHSLlxDRrd_aGvziEVrCQ0k7bZPLE1TGfJllVcmuP5bE-jmhlMZT3XENuG/s1600/tallest%20actress%20in%20Kollywood.jpg";
-                  let logoResponse = await fetch(watermarkUrl);
-                  if (!logoResponse.ok) {
-                    const headerLogo = document.querySelector('header img');
-                    if (headerLogo) logoResponse = await fetch(headerLogo.src);
-                  }
-                  if (logoResponse && logoResponse.ok) {
-                    const logoBlob = await logoResponse.blob();
-                    const logoImg = new Image();
-                    const logoUrl = URL.createObjectURL(logoBlob);
-                    logoImg.src = logoUrl;
-                    await new Promise((res, rej) => { logoImg.onload = res; logoImg.onerror = rej; });
-
-                    // Center the watermark, 60% of image width
-                    const wmWidth = canvas.width * 0.6; 
-                    const wmHeight = (wmWidth / logoImg.width) * logoImg.height;
-                    const x = (canvas.width - wmWidth) / 2;
-                    const y = (canvas.height - wmHeight) / 2;
-
-                    ctx.globalAlpha = 0.5; // Transparent
-                    ctx.drawImage(logoImg, x, y, wmWidth, wmHeight);
-                    ctx.globalAlpha = 1.0;
-                    
-                    URL.revokeObjectURL(logoUrl);
-                  }
-                } catch (wmErr) {
-                  console.log("Could not add watermark:", wmErr);
-                }
-
-                const finalBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
-                URL.revokeObjectURL(imgUrl);
-
-                const file = new File([finalBlob], p.name.replace(/\s+/g, '_') + '.jpg', { type: 'image/jpeg' });
+                const file = new File([blob], p.name.replace(/\s+/g, '_') + '.jpg', { type: blob.type || 'image/jpeg' });
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                   fileArray = [file];
                 }
@@ -225,6 +184,10 @@ let SHOP_WHATSAPP = "";
           console.log("Share aborted or failed, copying link instead.");
           await navigator.clipboard.writeText(shareUrl);
           showToast("Link copied! 🔗");
+        } finally {
+          btn.innerHTML = originalText;
+          btn.style.opacity = '1';
+          btn.disabled = false;
         }
       });
 
