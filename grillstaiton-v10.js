@@ -22,7 +22,7 @@ let SHOP_WHATSAPP = "";
         footer.innerHTML = `
           <p>📍${data.ShopAddress || ''}</p>
           <p>📞 ${data.FooterNumber || ''} | 🕒 Open: ${data.OpeningHours || ''}</p>
-          <p>© 2025 Grill Station</p>
+          <p>© 2026 Grill Station</p>
         `;
       }
       // Update About Us
