@@ -22,7 +22,7 @@ let SHOP_WHATSAPP = "";
         footer.innerHTML = `
           <p>📍${data.ShopAddress || ''}</p>
           <p>📞 ${data.FooterNumber || ''} | 🕒 Open: ${data.OpeningHours || ''}</p>
-          <p>© 2026 Grill Station</p>
+          <p>© 2025 Grill Station</p>
         `;
       }
       // Update About Us
@@ -140,6 +140,25 @@ let SHOP_WHATSAPP = "";
       `;
       parent.appendChild(div);
 
+      // ---------- Selection / highlight logic ----------
+      div.addEventListener('click', (e) => {
+        // Ignore clicks on buttons and selects (they handle their own logic)
+        if (e.target.closest('button') || e.target.closest('select') || e.target.closest('label') || e.target.closest('input')) return;
+
+        const section = div.closest('#menu, #offers-menu');
+        if (!section) return;
+
+        const isAlreadySelected = div.classList.contains('selected');
+
+        // Clear any existing selection in this section
+        section.querySelectorAll('.item.selected').forEach(el => el.classList.remove('selected'));
+
+        // If it wasn't already selected, select it now
+        if (!isAlreadySelected) {
+          div.classList.add('selected');
+        }
+      });
+
       div.querySelector('.share-btn').addEventListener('click', async (e) => {
         const btn = e.currentTarget;
         const originalText = btn.innerHTML;
@@ -256,6 +275,13 @@ let SHOP_WHATSAPP = "";
   }
 
   gSel('cart-header').addEventListener('click', ()=> gSel('cartoggle').classList.toggle('show'));
+
+  // ---------- Click outside to clear selection ----------
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.item')) {
+      document.querySelectorAll('.item.selected').forEach(el => el.classList.remove('selected'));
+    }
+  });
 
   // ---------------- WhatsApp Order ----------------
   function sendCart(area){
