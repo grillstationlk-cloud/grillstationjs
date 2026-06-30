@@ -567,6 +567,22 @@ footer p {
   color: var(--text-muted);
 }
 
+/* --- Item Highlight/Dim Logic --- */
+.menu.has-focus .item {
+  opacity: 0.3;
+  filter: grayscale(60%);
+  transform: scale(0.95);
+}
+
+.menu.has-focus .item.focused {
+  opacity: 1;
+  filter: grayscale(0%);
+  transform: scale(1.05) translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 107, 0, 0.6);
+  border-color: var(--primary);
+  z-index: 10;
+}
+
 /* --- Responsive --- */
 @media (max-width: 768px) {
   nav {
