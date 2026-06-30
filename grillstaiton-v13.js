@@ -65,13 +65,11 @@ let SHOP_WHATSAPP = "";
           const target = d.getElementById('product-' + shared.replace(/\s+/g, '-').toLowerCase());
           if (target) {
             target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            target.style.boxShadow = '0 0 20px #FF6B00';
-            target.style.transform = 'scale(1.02)';
-            target.style.transition = 'all 0.5s ease';
-            setTimeout(() => {
-              target.style.boxShadow = '';
-              target.style.transform = '';
-            }, 4000);
+            const parent = target.closest('.menu');
+            if (parent) {
+              parent.classList.add('has-focus');
+              target.classList.add('focused');
+            }
           }
         }
       }, 500);
@@ -139,25 +137,6 @@ let SHOP_WHATSAPP = "";
         <span class="out-of-stock">Out of Stock</span>
       `;
       parent.appendChild(div);
-
-      // ---------- Selection / highlight logic ----------
-      div.addEventListener('click', (e) => {
-        // Ignore clicks on buttons and selects (they handle their own logic)
-        if (e.target.closest('button') || e.target.closest('select') || e.target.closest('label') || e.target.closest('input')) return;
-
-        const section = div.closest('#menu, #offers-menu');
-        if (!section) return;
-
-        const isAlreadySelected = div.classList.contains('selected');
-
-        // Clear any existing selection in this section
-        section.querySelectorAll('.item.selected').forEach(el => el.classList.remove('selected'));
-
-        // If it wasn't already selected, select it now
-        if (!isAlreadySelected) {
-          div.classList.add('selected');
-        }
-      });
 
       div.querySelector('.share-btn').addEventListener('click', async (e) => {
         const btn = e.currentTarget;
@@ -242,6 +221,22 @@ let SHOP_WHATSAPP = "";
         else { cart.push({name:p.name,size:sz,qty:q,price:pr,addons:ad}); }
         updateCart(); showToast(p.name+" added to cart ✅");
       });
+
+      // Highlight item logic
+      div.addEventListener('click', (e) => {
+        if(e.target.tagName==='BUTTON' || e.target.tagName==='SELECT' || e.target.tagName==='INPUT' || e.target.tagName==='LABEL') return;
+        const parent = div.closest('.menu');
+        if(!parent) return;
+        
+        if(div.classList.contains('focused')) {
+          div.classList.remove('focused');
+          parent.classList.remove('has-focus');
+        } else {
+          parent.querySelectorAll('.item').forEach(i => i.classList.remove('focused'));
+          div.classList.add('focused');
+          parent.classList.add('has-focus');
+        }
+      });
     });
   }
 
@@ -275,13 +270,6 @@ let SHOP_WHATSAPP = "";
   }
 
   gSel('cart-header').addEventListener('click', ()=> gSel('cartoggle').classList.toggle('show'));
-
-  // ---------- Click outside to clear selection ----------
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.item')) {
-      document.querySelectorAll('.item.selected').forEach(el => el.classList.remove('selected'));
-    }
-  });
 
   // ---------------- WhatsApp Order ----------------
   function sendCart(area){
@@ -338,6 +326,16 @@ gSel('cart-whatsapp').addEventListener('click', ()=>{
       setInterval(()=>{ heroIndex=(heroIndex+1)%heroImages.length; hero.style.backgroundImage=`url('${heroImages[heroIndex]}')`; },5000);
     }).catch(console.error);
   })();
+
+  // Clear focus when clicking outside menu items
+  d.addEventListener('click', (e) => {
+    if(!e.target.closest('.item')) {
+      d.querySelectorAll('.menu.has-focus').forEach(menu => {
+        menu.classList.remove('has-focus');
+        menu.querySelectorAll('.item.focused').forEach(item => item.classList.remove('focused'));
+      });
+    }
+  });
 
 })();
 
