@@ -196,8 +196,14 @@ let SHOP_WHATSAPP = "";
       let allZero=true;
       Object.keys(p.prices).forEach(sz=>{
         let opt=d.createElement('option'); opt.value=sz; opt.dataset.price=p.prices[sz]; 
-        if((p.stock[sz]||0)<=0) opt.disabled=true; else allZero=false; 
-        opt.textContent=sz; sizeSel.appendChild(opt);
+        if((p.stock[sz]||0)<=0) {
+          opt.disabled=true;
+          opt.textContent = sz + " (Out of Stock)";
+        } else {
+          allZero=false; 
+          opt.textContent = sz;
+        }
+        sizeSel.appendChild(opt);
       });
 
       if(allZero){ sizeSel.style.display='none'; qtySel.style.display='none'; if(extra) extra.style.display='none'; div.querySelector('.add-cart').style.display='none'; oos.style.display='block'; live.textContent=''; return; }
