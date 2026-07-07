@@ -488,6 +488,49 @@ nav a:hover {
   padding: 20px;
 }
 
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.cart-item span {
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  padding-right: 15px;
+  line-height: 1.4;
+}
+
+.cart-item button {
+  background: #e84118;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.cart-item button:hover {
+  background: #c23616;
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(232, 65, 24, 0.5);
+}
+
 #cart-summary {
   padding: 15px 20px;
   background: rgba(0, 0, 0, 0.3);
