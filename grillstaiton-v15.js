@@ -262,7 +262,12 @@ let SHOP_WHATSAPP = "";
       cnt+=it.qty; sub+=it.price*it.qty; addTot+=addonP;
     });
 
-    gSel('cart-count').textContent=cnt;
+    const countEl = gSel('cart-count');
+    countEl.textContent=cnt;
+    countEl.classList.remove('bump');
+    void countEl.offsetWidth; // Trigger reflow to restart animation
+    countEl.classList.add('bump');
+    
     gSel('cart-subtotal').textContent='Items: LKR '+sub.toFixed(2);
     gSel('cart-addons').textContent='Add-ons: LKR '+addTot.toFixed(2);
 
