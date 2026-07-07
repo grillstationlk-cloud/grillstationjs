@@ -79,15 +79,51 @@ let SHOP_WHATSAPP = "";
   fetch("https://script.google.com/macros/s/AKfycbxBHA1PJYrwNBtv3SmSGOW7tHZtWnbdv3MzZ6j5KuEJ3XoGXjjEuDd9djUygHicThvKpQ/exec")
     .then(r=>r.json()).then(dt=>{
       dt.forEach(it=>{ if(it.Area) areaCharges[it.Area] = parseFloat(it.Charge||0); });
+      const customOptions = d.getElementById('custom-area-options');
       Object.keys(areaCharges).forEach(a=>{
-        let o = d.createElement('option'); o.value=a; o.textContent=a; areaSelect.appendChild(o);
+        let o = d.createElement('div'); o.dataset.value=a; o.textContent=a; 
+        customOptions.appendChild(o);
       });
+      
+      const customDisplay = d.getElementById('custom-area-display');
+      const customWrapper = d.getElementById('custom-area-wrapper');
+      
+      customDisplay.addEventListener('click', function(e) {
+        e.stopPropagation();
+        customOptions.classList.toggle('select-hide');
+      });
+
+      customOptions.addEventListener('click', function(e) {
+        if(e.target.tagName === 'DIV' || e.target.tagName === 'SPAN') {
+          const targetDiv = e.target.closest('div');
+          const val = targetDiv.dataset.value;
+          customDisplay.textContent = targetDiv.textContent;
+          areaSelect.value = val;
+          customOptions.classList.add('select-hide');
+          areaSelect.dispatchEvent(new Event('change'));
+        }
+      });
+      
+      d.addEventListener('click', function(e) {
+        if(!e.target.closest('.custom-select')) {
+          customOptions.classList.add('select-hide');
+        }
+      });
+
+      const savedArea = localStorage.getItem('grillArea');
+      if(savedArea && areaCharges[savedArea] !== undefined) {
+        areaSelect.value = savedArea;
+        customDisplay.textContent = savedArea;
+      }
       updateCart();
     }).catch(e=>console.error('Area fetch failed', e));
 
   areaSelect.addEventListener('change', ()=>{
     updateCart();
     const v = areaSelect.value;
+    if(v && !v.startsWith('http')) {
+      localStorage.setItem('grillArea', v);
+    }
     if(v.startsWith('http')) window.location.href = v;
   });
 
@@ -217,7 +253,15 @@ let SHOP_WHATSAPP = "";
       if(extra) extra.addEventListener('change',updPrice); updPrice();
 
       div.querySelector('.add-cart').addEventListener('click',()=>{
-        if(!areaSelect.value){ alert('Please select delivery area first!'); areaSelect.focus(); return; }
+        if(!areaSelect.value){ 
+          showToast('⚠️ Please select delivery area first!', true); 
+          const wrapper = d.getElementById('custom-area-wrapper');
+          wrapper.scrollIntoView({behavior: 'smooth', block: 'center'});
+          wrapper.classList.add('highlight-pulse');
+          d.getElementById('custom-area-options').classList.remove('select-hide');
+          setTimeout(() => wrapper.classList.remove('highlight-pulse'), 3000);
+          return; 
+        }
         const sz=sizeSel.value, q=parseInt(qtySel.value||1), stk=p.stock[sz]||0;
         if(q>stk){ alert('Only '+stk+' left!'); return; }
         let pr=parseFloat(p.prices[sz]||0), ad=(extra&&extra.checked)?' + Extra Cheese':'';
@@ -312,19 +356,24 @@ gSel('cart-whatsapp').addEventListener('click', ()=>{
     return; 
   }
   if(!areaSelect.value){ 
-    alert('Select delivery area first!'); 
-    // Scroll to the delivery area dropdown
-    areaSelect.scrollIntoView({behavior: 'smooth', block: 'center'});
-    areaSelect.focus();
+    showToast('⚠️ Please select delivery area first!', true); 
+    const wrapper = d.getElementById('custom-area-wrapper');
+    wrapper.scrollIntoView({behavior: 'smooth', block: 'center'});
+    wrapper.classList.add('highlight-pulse');
+    d.getElementById('custom-area-options').classList.remove('select-hide');
+    setTimeout(() => wrapper.classList.remove('highlight-pulse'), 3000);
     return; 
   }
   sendCart(areaSelect.value);
 });
 
   // ---------------- Toast ----------------
-  function showToast(msg){
-    const t = gSel('toast'); t.textContent=msg; t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'),2000);
+  function showToast(msg, isError = false){
+    const t = gSel('toast'); 
+    t.textContent=msg; 
+    if(isError) t.classList.add('error'); else t.classList.remove('error');
+    t.classList.add('show');
+    setTimeout(()=>{ t.classList.remove('show'); t.classList.remove('error'); },2500);
   }
 
   // ---------------- Hero Banners ----------------
