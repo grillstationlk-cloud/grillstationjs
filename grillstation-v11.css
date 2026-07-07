@@ -460,7 +460,7 @@ nav a:hover {
 
 #cart-count {
   background: #fff;
-  color: var(--primary);
+  color: #ff0000;
   border-radius: 50%;
   width: 28px;
   height: 28px;
@@ -468,6 +468,14 @@ nav a:hover {
   align-items: center;
   justify-content: center;
   font-weight: 800;
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s, color 0.3s;
+}
+
+#cart-count.bump {
+  transform: scale(1.4);
+  background: #ff0000;
+  color: #fff;
 }
 
 #cartoggle {
