@@ -100,17 +100,73 @@ nav a:hover {
   letter-spacing: 0.5px;
 }
 
-#area-bar select {
+/* Custom Select CSS */
+.custom-select {
+  position: relative;
   margin-left: 15px;
-  padding: 8px 15px;
-  border-radius: 20px;
-  border: none;
   font-family: 'Outfit', sans-serif;
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.9);
+}
+
+.select-selected {
+  background-color: rgba(255, 255, 255, 0.9);
   color: #000;
-  outline: none;
+  padding: 8px 15px;
+  border-radius: 20px;
   cursor: pointer;
+  user-select: none;
+  transition: all 0.3s ease;
+  min-width: 180px;
+}
+
+.select-selected:after {
+  content: ' ▼';
+  font-size: 0.8em;
+}
+
+.custom-select.highlight-pulse .select-selected {
+  animation: pulse-border 1s infinite;
+  background: #fff;
+  color: #ff0000;
+}
+
+.select-items {
+  position: absolute;
+  background-color: #fff;
+  color: #000;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1005;
+  border-radius: 10px;
+  margin-top: 5px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.select-items div {
+  padding: 10px 15px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+}
+
+.select-items div:hover {
+  background-color: rgba(255, 107, 0, 0.1);
+  color: var(--primary);
+}
+
+.select-hide {
+  display: none;
+}
+
+@keyframes pulse-border {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.8); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
 }
 
 /* --- Hero Section --- */
@@ -582,6 +638,12 @@ nav a:hover {
   font-size: 17px;
   font-weight: 600;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease;
+}
+
+#toast.error {
+  background: #ff4757;
+  box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
 }
 
 #toast.show {
