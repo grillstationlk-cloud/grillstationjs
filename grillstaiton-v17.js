@@ -244,13 +244,31 @@ let SHOP_WHATSAPP = "";
 
       if(allZero){ sizeSel.style.display='none'; qtySel.style.display='none'; if(extra) extra.style.display='none'; div.querySelector('.add-cart').style.display='none'; oos.style.display='block'; live.textContent=''; return; }
 
+      // Update qty dropdown based on selected size stock
+      const updateQtyOptions = () => {
+        const sz = sizeSel.value;
+        const maxQty = Math.min(p.stock[sz] || 0, 10); // cap at 10
+        const prevQty = parseInt(qtySel.value) || 1;
+        qtySel.innerHTML = '';
+        for(let i = 1; i <= maxQty; i++) {
+          const o = d.createElement('option');
+          o.value = i; o.textContent = i;
+          qtySel.appendChild(o);
+        }
+        qtySel.value = Math.min(prevQty, maxQty);
+      };
+
       const updPrice=()=>{
         const base=parseFloat(sizeSel.selectedOptions[0].dataset.price||0);
         const q=parseInt(qtySel.value||1); const ch=(extra&&extra.checked)?400:0;
         live.textContent='LKR '+((base+ch)*q).toFixed(2);
       };
-      sizeSel.addEventListener('change',updPrice); qtySel.addEventListener('change',updPrice);
-      if(extra) extra.addEventListener('change',updPrice); updPrice();
+
+      sizeSel.addEventListener('change', () => { updateQtyOptions(); updPrice(); });
+      qtySel.addEventListener('change', updPrice);
+      if(extra) extra.addEventListener('change', updPrice);
+      updateQtyOptions();
+      updPrice();
 
       div.querySelector('.add-cart').addEventListener('click',()=>{
         if(!areaSelect.value){ 
